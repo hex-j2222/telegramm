@@ -15,7 +15,7 @@ on:
         options: [ debug, release ]
 
 env:
-  NDK_VERSION:    "29.0.14206865"   # NDK r29 — latest stable (Oct 2025)
+  NDK_VERSION:    "29.0.14206865"   # NDK r29 — latest stable
   JAVA_VERSION:   "17"
   GRADLE_VERSION: "8.14"
 
@@ -31,7 +31,6 @@ jobs:
       tdlib-sha: ${{ steps.get-sha.outputs.sha }}
 
     steps:
-      # ── الحصول على آخر SHA كمفتاح للـ cache ─
       - name: Get TDLib latest SHA
         id: get-sha
         run: |
@@ -45,8 +44,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: tdlib-out
-          # ✅ المفتاح مرتبط بالـ SHA الفعلي — يُعاد البناء تلقائياً عند تحديث TDLib
-          key: tdlib-sha-${{ steps.get-sha.outputs.sha }}-ndk${{ env.NDK_VERSION }}-r2
+          key: tdlib-sha-${{ steps.get-sha.outputs.sha }}-ndk${{ env.NDK_VERSION }}-r3
 
       # ── تثبيت المتطلبات ───────────────────────
       - name: Install system deps
@@ -57,49 +55,55 @@ jobs:
             cmake ninja-build gperf \
             libssl-dev zlib1g-dev \
             openjdk-17-jdk \
-            php-cli perl          # ✅ مطلوبان لتوليد كود TDLib تلقائياً
+            php-cli perl
 
       - name: Setup Android SDK
         if: steps.cache.outputs.cache-hit != 'true'
         uses: android-actions/setup-android@v3
 
-      - name: Install NDK r29
+      - name: Install NDK r29 + CMake 3.22.1
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
+          # NDK r29 مطلوب للبناء
           yes | sdkmanager "ndk;${{ env.NDK_VERSION }}" \
             --sdk_root=$ANDROID_HOME 2>/dev/null || true
-          # ✅ TDLib يحتاج CMake 3.22.1 داخل SDK
+          # CMake 3.22.1 مطلوب صراحةً من سكريبتات TDLib
           yes | sdkmanager "cmake;3.22.1" \
+            --sdk_root=$ANDROID_HOME 2>/dev/null || true
+          # platform android-34 مطلوب من سكريبتات TDLib
+          yes | sdkmanager "platforms;android-34" \
             --sdk_root=$ANDROID_HOME 2>/dev/null || true
 
       # ── clone TDLib ───────────────────────────
       - name: Clone TDLib
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          # ✅ الإصلاح الأساسي: TDLib لا يستخدم version tags على GitHub
-          # الفريق يوصي باستخدام master مباشرة
+          # TDLib لا يستخدم version tags — نستخدم master مباشرة
           git clone --depth=1 https://github.com/tdlib/td.git tdlib
           echo "Cloned TDLib @ $(git -C tdlib rev-parse HEAD)"
 
-      # ── بناء OpenSSL أولاً (مطلوب لـ TDLib) ──
+      # ── بناء OpenSSL ─────────────────────────
+      # السكريبتات يجب تنفيذها من داخل tdlib/example/android
+      # build-openssl.sh تُنشئ مجلد "openssl" في نفس المجلد
+      # build-tdlib.sh تبحث عن "openssl" في نفس المجلد تلقائياً
       - name: Build OpenSSL for Android
         if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: tdlib/example/android
         run: |
-          # ✅ استخدام السكريبت الرسمي بدل cmake مباشرة
-          # المعاملات: [sdk_path] [ndk_version] [openssl_version]
-          cd tdlib/example/android
+          # المعاملات: [android_sdk_path] [ndk_version]
+          # الناتج: ./openssl/ (ينشأ تلقائياً في نفس المجلد)
           ./build-openssl.sh "$ANDROID_HOME" "${{ env.NDK_VERSION }}"
+          echo "✅ OpenSSL built at: $(ls -d openssl 2>/dev/null || echo 'NOT FOUND')"
 
-      # ── بناء TDLib بالسكريبت الرسمي ───────────
+      # ── بناء TDLib ────────────────────────────
       - name: Build TDLib for Android
         if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: tdlib/example/android
         run: |
-          # ✅ السكريبت الرسمي يولّد الكود التلقائي (mime_type_to_extension.cpp ...)
-          # ويبني جميع ABIs بشكل صحيح
-          # المعاملات: [sdk_path] [ndk_version] [openssl_path]
-          cd tdlib/example/android
-          OPENSSL_PATH="$(pwd)/openssl"
-          ./build-tdlib.sh "$ANDROID_HOME" "${{ env.NDK_VERSION }}" "$OPENSSL_PATH"
+          # المعاملات: [android_sdk_path] [ndk_version]
+          # يجد openssl/ تلقائياً في نفس المجلد (بدون تمرير مسار)
+          # يولّد الكود التلقائي (mime_type_to_extension.cpp ...) ثم يبني
+          ./build-tdlib.sh "$ANDROID_HOME" "${{ env.NDK_VERSION }}"
 
       # ── جمع المخرجات ─────────────────────────
       - name: Collect TDLib outputs
@@ -107,22 +111,30 @@ jobs:
         run: |
           mkdir -p tdlib-out/jniLibs tdlib-out/jar
 
-          # .so files لجميع ABIs
+          # مسار المخرجات الرسمي: tdlib/example/android/tdlib/libs/
+          LIBS_DIR="tdlib/example/android/tdlib/libs"
+
           for ABI in arm64-v8a armeabi-v7a x86_64 x86; do
-            SRC="tdlib/example/android/tdlib/libs/$ABI"
+            SRC="$LIBS_DIR/$ABI"
             if [ -d "$SRC" ]; then
               mkdir -p "tdlib-out/jniLibs/$ABI"
               cp -v "$SRC"/*.so "tdlib-out/jniLibs/$ABI/" 2>/dev/null || true
+              echo "✅ $ABI: $(ls tdlib-out/jniLibs/$ABI/)"
+            else
+              echo "⚠️ $ABI not found at $SRC"
             fi
           done
 
           # tdlib.jar
-          JAR=$(find tdlib/example/android/tdlib -name "*.jar" | head -1)
-          [ -n "$JAR" ] && cp -v "$JAR" tdlib-out/jar/tdlib.jar \
-            && echo "✅ jar: $(ls -sh tdlib-out/jar/tdlib.jar)" \
-            || echo "⚠️  jar not found"
+          JAR=$(find tdlib/example/android/tdlib -name "tdlib.jar" 2>/dev/null | head -1)
+          if [ -n "$JAR" ]; then
+            cp -v "$JAR" tdlib-out/jar/tdlib.jar
+            echo "✅ jar: $(ls -sh tdlib-out/jar/tdlib.jar)"
+          else
+            echo "⚠️ tdlib.jar not found — will use stub classes"
+          fi
 
-          echo "--- Output structure ---"
+          echo "--- Final output structure ---"
           find tdlib-out -type f | sort
 
       - name: Save TDLib cache
@@ -130,7 +142,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: tdlib-out
-          key: tdlib-sha-${{ steps.get-sha.outputs.sha }}-ndk${{ env.NDK_VERSION }}-r2
+          key: tdlib-sha-${{ steps.get-sha.outputs.sha }}-ndk${{ env.NDK_VERSION }}-r3
 
       - name: Upload TDLib artifact
         uses: actions/upload-artifact@v4
@@ -172,7 +184,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: tdlib-out
-          key: tdlib-sha-${{ needs.tdlib.outputs.tdlib-sha }}-ndk${{ env.NDK_VERSION }}-r2
+          key: tdlib-sha-${{ needs.tdlib.outputs.tdlib-sha }}-ndk${{ env.NDK_VERSION }}-r3
 
       - name: Download TDLib artifact (fallback)
         if: steps.tdlib-cache.outputs.cache-hit != 'true'
@@ -319,3 +331,4 @@ jobs:
           files: apks/*.apk
           draft: false
           prerelease: ${{ contains(github.ref_name, '-beta') }}
+
