@@ -24,7 +24,7 @@ jobs:
   # JOB 1 — Build & cache TDLib automatically
   # ══════════════════════════════════════════════
   tdlib:
-    name: "📦 TDLib (${{ env.TDLIB_VERSION }})"
+    name: "📦 TDLib"  # ✅ تم إصلاح الخطأ (إزالة env.TDLIB_VERSION)
     runs-on: ubuntu-latest
     outputs:
       cache-hit: ${{ steps.cache.outputs.cache-hit }}
