@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Telegram Vault</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title_1">Welcome to Telegram Vault</string>
+    <string name="onboarding_desc_1">Save and manage your Telegram accounts securely on your device. Your data never leaves your phone.</string>
+    <string name="onboarding_title_2">Military-Grade Security</string>
+    <string name="onboarding_desc_2">All accounts are encrypted with AES-256-GCM. Protected by biometric, PIN, or pattern lock.</string>
+    <string name="onboarding_title_3">Get Your API Credentials</string>
+    <string name="onboarding_desc_3">You need an App ID and Hash from my.telegram.org to connect your account. We\'ll guide you step by step.</string>
+    <string name="get_started">Get Started</string>
+    <string name="skip">Skip</string>
+
+    <!-- Home -->
+    <string name="my_accounts">My Accounts</string>
+    <string name="add_account">Add Account</string>
+    <string name="no_accounts_title">No accounts yet</string>
+    <string name="no_accounts_desc">Tap the + button to add your first Telegram account</string>
+    <string name="delete_account_title">Remove Account</string>
+    <string name="delete_account_message">Remove \"%s\" from Vault? This won\'t delete your Telegram account.</string>
+    <string name="account_deleted">Account \"%s\" removed</string>
+    <string name="settings">Settings</string>
+
+    <!-- Add Account Steps -->
+    <string name="step_1_of_3">Step 1 of 3 — API Setup</string>
+    <string name="step_2_of_3">Step 2 of 3 — Phone Number</string>
+    <string name="step_3_of_3">Step 3 of 3 — Verification Code</string>
+    <string name="step_password">2FA Password Required</string>
+    <string name="enter_api_id">App ID (from my.telegram.org)</string>
+    <string name="enter_api_hash">App Hash (from my.telegram.org)</string>
+    <string name="enter_phone">Phone Number (with country code)</string>
+    <string name="enter_code">Verification Code</string>
+    <string name="enter_password">2FA Cloud Password</string>
+    <string name="learn_how_to_get_api">How to get App ID and Hash?</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="send_code">Send Code</string>
+    <string name="verify">Verify</string>
+    <string name="code_sent_to">Code sent to %s</string>
+    <string name="password_hint_label">Hint: %s</string>
+
+    <!-- Errors -->
+    <string name="error_invalid_api_id">Invalid App ID. Must be a positive number.</string>
+    <string name="error_invalid_api_hash">Invalid App Hash. Must be 32 characters.</string>
+    <string name="error_invalid_phone">Invalid phone number.</string>
+    <string name="error_invalid_code">Invalid code. Must be at least 4 digits.</string>
+    <string name="error_empty_password">Password cannot be empty.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_unknown">An unexpected error occurred. Please try again.</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="username">Username</string>
+    <string name="phone">Phone</string>
+    <string name="bio">Bio</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="profile_updated">Profile updated successfully</string>
+    <string name="receive_code_here">This account can receive login codes</string>
+
+    <!-- Settings -->
+    <string name="security">Security</string>
+    <string name="biometric_lock">Biometric Lock</string>
+    <string name="pattern_lock">Pattern Lock</string>
+    <string name="pin_lock">PIN Lock</string>
+    <string name="notifications">Notifications</string>
+    <string name="language">Language</string>
+    <string name="theme">Theme</string>
+    <string name="google_drive_backup">Google Drive Backup</string>
+    <string name="google_signed_in">Connected to Google Drive</string>
+    <string name="google_not_signed_in">Not connected</string>
+    <string name="about">About</string>
+    <string name="version">Version %s</string>
+
+    <!-- PIN / Pattern -->
+    <string name="enter_new_pin">Enter a new 6-digit PIN</string>
+    <string name="confirm_pin">Confirm your PIN</string>
+    <string name="biometric_title">Unlock Telegram Vault</string>
+    <string name="biometric_subtitle">Use your biometric to access your accounts</string>
+    <string name="use_pin">Use PIN</string>
+
+    <!-- Lock -->
+    <string name="enter_pin_to_unlock">Enter PIN to unlock</string>
+    <string name="delete">Delete</string>
+
+    <!-- Theme -->
+    <string name="dark_theme">Dark (Space)</string>
+    <string name="light_theme">Light</string>
+    <string name="system_theme">Follow System</string>
+    <string name="choose_theme">Choose Theme</string>
+
+    <!-- API Guide -->
+    <string name="api_guide_title">How to Get API Credentials</string>
+    <string name="api_guide_step1">1. Open my.telegram.org in your browser</string>
+    <string name="api_guide_step2">2. Sign in with your Telegram phone number</string>
+    <string name="api_guide_step3">3. Click on "API Development Tools"</string>
+    <string name="api_guide_step4">4. Fill in the App title and Short name</string>
+    <string name="api_guide_step5">5. Copy your "App api_id" and "App api_hash"</string>
+    <string name="open_telegram_website">Open my.telegram.org</string>
+
+    <!-- About -->
+    <string name="about_title">About Telegram Vault</string>
+    <string name="about_desc">Telegram Vault uses the official TDLib (Telegram Database Library) to securely manage your personal Telegram accounts. All data is stored locally and encrypted.</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="open_source">Open Source Licenses</string>
+
+    <!-- Misc -->
+    <string name="loading">Loading…</string>
+    <string name="last_used">Last used: %s</string>
+    <string name="active">Active</string>
+</resources>

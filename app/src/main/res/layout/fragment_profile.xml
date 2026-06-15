@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/bg_primary" android:fillViewport="true">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Space Header -->
+        <FrameLayout android:layout_width="match_parent" android:layout_height="220dp"
+            android:background="@drawable/bg_profile_header">
+
+            <!-- Back -->
+            <ImageView android:id="@+id/btnBack"
+                android:layout_width="40dp" android:layout_height="40dp"
+                android:src="@drawable/ic_arrow_back" android:tint="@color/white"
+                android:background="@drawable/bg_icon_btn_dark" android:padding="8dp"
+                android:layout_margin="16dp" android:contentDescription="@string/back"/>
+
+            <!-- Edit -->
+            <ImageView android:id="@+id/btnEdit"
+                android:layout_width="40dp" android:layout_height="40dp"
+                android:src="@drawable/ic_edit" android:tint="@color/white"
+                android:background="@drawable/bg_icon_btn_dark" android:padding="8dp"
+                android:layout_gravity="end" android:layout_margin="16dp"
+                android:contentDescription="@string/edit_profile"/>
+
+            <!-- Avatar -->
+            <FrameLayout android:layout_width="96dp" android:layout_height="96dp"
+                android:layout_gravity="bottom|center_horizontal" android:layout_marginBottom="-48dp">
+                <ImageView android:id="@+id/ivAvatar"
+                    android:layout_width="96dp" android:layout_height="96dp"
+                    android:background="@drawable/bg_avatar_border" android:scaleType="centerCrop"/>
+                <TextView android:id="@+id/tvInitials"
+                    android:layout_width="96dp" android:layout_height="96dp"
+                    android:gravity="center" android:textSize="36sp"
+                    android:fontFamily="@font/inter_bold" android:textColor="@color/space_deep"
+                    android:background="@drawable/bg_avatar_border_initials"/>
+            </FrameLayout>
+        </FrameLayout>
+
+        <ProgressBar android:id="@+id/progressBar"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center" android:indeterminateTint="@color/accent_cyan"
+            android:visibility="gone" android:layout_marginTop="8dp"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp" android:layout_marginTop="48dp">
+
+            <!-- View Mode -->
+            <LinearLayout android:id="@+id/viewMode"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView android:id="@+id/tvName"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center" android:textSize="22sp"
+                    android:fontFamily="@font/inter_bold" android:textColor="@color/text_primary"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView android:id="@+id/tvUsername"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center" android:textSize="14sp"
+                    android:textColor="@color/accent_cyan" android:layout_marginBottom="4dp"/>
+
+                <TextView android:id="@+id/tvPhone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:gravity="center" android:textSize="14sp"
+                    android:textColor="@color/text_secondary" android:layout_marginBottom="16dp"/>
+
+                <!-- Code Badge -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp" app:cardBackgroundColor="@color/surface_card"
+                    app:strokeColor="@color/accent_cyan" app:strokeWidth="1dp"
+                    app:cardElevation="0dp" android:layout_marginBottom="16dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="horizontal" android:padding="14dp" android:gravity="center_vertical">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp"
+                            android:src="@drawable/ic_shield_check" android:tint="@color/accent_cyan"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:layout_marginStart="10dp"
+                            android:text="@string/receive_code_here" android:textSize="13sp"
+                            android:textColor="@color/text_primary"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Bio -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp" app:cardBackgroundColor="@color/surface_card"
+                    app:strokeColor="@color/stroke_subtle" app:strokeWidth="1dp"
+                    app:cardElevation="0dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:orientation="vertical" android:padding="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                            android:text="@string/bio" android:textSize="12sp"
+                            android:textColor="@color/accent_cyan" android:fontFamily="@font/inter_semibold"
+                            android:layout_marginBottom="6dp"/>
+                        <TextView android:id="@+id/tvBio"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:textSize="14sp" android:textColor="@color/text_primary"
+                            android:lineSpacingMultiplier="1.5"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Edit Mode -->
+            <LinearLayout android:id="@+id/editMode"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:visibility="gone">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:hint="@string/first_name" style="@style/Widget.TelegramVault.TextInput"
+                    android:layout_marginBottom="12dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFirstName"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:hint="@string/last_name" style="@style/Widget.TelegramVault.TextInput"
+                    android:layout_marginBottom="12dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLastName"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:hint="@string/bio" style="@style/Widget.TelegramVault.TextInput"
+                    android:layout_marginBottom="16dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etBio"
+                        android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:inputType="textMultiLine" android:minLines="3"
+                        android:textColor="@color/text_primary"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCancel"
+                        android:layout_width="0dp" android:layout_height="52dp"
+                        android:layout_weight="1" android:layout_marginEnd="8dp"
+                        android:text="@string/cancel"
+                        style="@style/Widget.TelegramVault.Button.Outlined"/>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnSave"
+                        android:layout_width="0dp" android:layout_height="52dp"
+                        android:layout_weight="1"
+                        android:text="@string/save"
+                        style="@style/Widget.TelegramVault.Button"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

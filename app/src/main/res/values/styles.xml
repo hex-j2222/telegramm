@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash screen transition -->
+    <style name="Theme.TelegramVault.Splash.Starting" parent="Theme.TelegramVault.Splash"/>
+
+    <!-- Dialog -->
+    <style name="Widget.TelegramVault.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorSurface">@color/surface_card</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.TelegramVault.DialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.TelegramVault.DialogButton.Outlined</item>
+    </style>
+
+    <style name="Widget.TelegramVault.DialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/accent_cyan</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.TelegramVault.DialogButton.Outlined" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- Snackbar -->
+    <style name="Widget.TelegramVault.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="android:background">@drawable/bg_snackbar</item>
+    </style>
+</resources>

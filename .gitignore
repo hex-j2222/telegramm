@@ -1,0 +1,23 @@
+# Local credentials — NEVER commit
+local.properties
+
+# Gradle
+.gradle/
+build/
+app/build/
+
+# Android Studio
+.idea/
+*.iml
+.DS_Store
+
+# Keys & signing
+*.jks
+*.keystore
+
+# Schemas (generated)
+app/schemas/
+
+# TDLib native libs (download separately)
+app/src/main/jniLibs/
+app/libs/*.jar

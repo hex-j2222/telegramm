@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fallback to system sans-serif if Inter TTF not placed in res/font/ -->
+    <string name="font_inter">sans-serif</string>
+    <string name="font_inter_semibold">sans-serif-medium</string>
+    <string name="font_inter_bold">sans-serif-black</string>
+</resources>

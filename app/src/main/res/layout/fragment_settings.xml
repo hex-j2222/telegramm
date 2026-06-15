@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/bg_primary">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="20dp">
+
+        <!-- Header -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+            <ImageView android:id="@+id/btnBack" android:layout_width="40dp" android:layout_height="40dp"
+                android:src="@drawable/ic_arrow_back" android:tint="@color/text_secondary"
+                android:background="@drawable/bg_icon_btn" android:padding="8dp"
+                android:contentDescription="@string/back"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:layout_marginStart="12dp"
+                android:text="@string/settings" android:textSize="22sp"
+                android:fontFamily="@font/inter_bold" android:textColor="@color/text_primary"/>
+        </LinearLayout>
+
+        <!-- Security Section -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/security" android:textSize="12sp"
+            android:fontFamily="@font/inter_semibold" android:textColor="@color/accent_cyan"
+            android:layout_marginBottom="8dp" android:letterSpacing="0.08"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp" app:cardBackgroundColor="@color/surface_card"
+            app:strokeColor="@color/stroke_subtle" app:strokeWidth="1dp"
+            app:cardElevation="0dp" android:layout_marginBottom="20dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Biometric -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+                    <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                        android:src="@drawable/ic_fingerprint" android:tint="@color/text_secondary"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:layout_marginStart="12dp"
+                        android:text="@string/biometric_lock" android:textSize="15sp"
+                        android:textColor="@color/text_primary"/>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchBiometric" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/accent_cyan"
+                        android:trackTint="@color/accent_cyan"/>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="@color/stroke_subtle" android:layout_marginHorizontal="16dp"/>
+
+                <!-- Pattern -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+                    <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                        android:src="@drawable/ic_pattern" android:tint="@color/text_secondary"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:layout_marginStart="12dp"
+                        android:text="@string/pattern_lock" android:textSize="15sp"
+                        android:textColor="@color/text_primary"/>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchPattern" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/accent_cyan"
+                        android:trackTint="@color/accent_cyan"/>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="@color/stroke_subtle" android:layout_marginHorizontal="16dp"/>
+
+                <!-- PIN -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+                    <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                        android:src="@drawable/ic_pin" android:tint="@color/text_secondary"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:layout_marginStart="12dp"
+                        android:text="@string/pin_lock" android:textSize="15sp"
+                        android:textColor="@color/text_primary"/>
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switchPin" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:thumbTint="@color/accent_cyan"
+                        android:trackTint="@color/accent_cyan"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Appearance Section -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Appearance" android:textSize="12sp"
+            android:fontFamily="@font/inter_semibold" android:textColor="@color/accent_cyan"
+            android:layout_marginBottom="8dp" android:letterSpacing="0.08"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp" app:cardBackgroundColor="@color/surface_card"
+            app:strokeColor="@color/stroke_subtle" app:strokeWidth="1dp"
+            app:cardElevation="0dp" android:layout_marginBottom="20dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Language -->
+                <LinearLayout android:id="@+id/btnLanguage"
+                    android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp" android:clickable="true" android:focusable="true">
+                    <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                        android:src="@drawable/ic_language" android:tint="@color/text_secondary"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:layout_marginStart="12dp"
+                        android:text="@string/language" android:textSize="15sp"
+                        android:textColor="@color/text_primary"/>
+                    <TextView android:id="@+id/tvCurrentLanguage"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:textSize="13sp" android:textColor="@color/text_secondary"/>
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/text_hint"
+                        android:layout_marginStart="4dp"/>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="@color/stroke_subtle" android:layout_marginHorizontal="16dp"/>
+
+                <!-- Theme -->
+                <LinearLayout android:id="@+id/btnTheme"
+                    android:layout_width="match_parent" android:layout_height="56dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp" android:clickable="true" android:focusable="true">
+                    <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                        android:src="@drawable/ic_theme" android:tint="@color/text_secondary"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:layout_marginStart="12dp"
+                        android:text="@string/theme" android:textSize="15sp"
+                        android:textColor="@color/text_primary"/>
+                    <TextView android:id="@+id/tvCurrentTheme"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:textSize="13sp" android:textColor="@color/text_secondary"/>
+                    <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_right" android:tint="@color/text_hint"
+                        android:layout_marginStart="4dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Cloud Backup -->
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Cloud Backup" android:textSize="12sp"
+            android:fontFamily="@font/inter_semibold" android:textColor="@color/accent_cyan"
+            android:layout_marginBottom="8dp" android:letterSpacing="0.08"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp" app:cardBackgroundColor="@color/surface_card"
+            app:strokeColor="@color/stroke_subtle" app:strokeWidth="1dp"
+            app:cardElevation="0dp" android:layout_marginBottom="20dp">
+            <LinearLayout android:id="@+id/btnGoogleDrive"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingHorizontal="16dp" android:clickable="true" android:focusable="true">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:src="@drawable/ic_google_drive" android:tint="@color/text_secondary"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="@string/google_drive_backup" android:textSize="15sp"
+                        android:textColor="@color/text_primary"/>
+                    <TextView android:id="@+id/tvGoogleStatus"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:textSize="12sp" android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+                <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                    android:src="@drawable/ic_chevron_right" android:tint="@color/text_hint"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Notifications -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp" app:cardBackgroundColor="@color/surface_card"
+            app:strokeColor="@color/stroke_subtle" app:strokeWidth="1dp"
+            app:cardElevation="0dp" android:layout_marginBottom="20dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingHorizontal="16dp">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:src="@drawable/ic_notifications" android:tint="@color/text_secondary"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="12dp"
+                    android:text="@string/notifications" android:textSize="15sp"
+                    android:textColor="@color/text_primary"/>
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchNotifications" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:thumbTint="@color/accent_cyan"
+                    android:trackTint="@color/accent_cyan"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- About -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp" app:cardBackgroundColor="@color/surface_card"
+            app:strokeColor="@color/stroke_subtle" app:strokeWidth="1dp"
+            app:cardElevation="0dp" android:layout_marginBottom="40dp">
+            <LinearLayout android:id="@+id/btnAbout"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingHorizontal="16dp" android:clickable="true" android:focusable="true">
+                <ImageView android:layout_width="22dp" android:layout_height="22dp"
+                    android:src="@drawable/ic_info" android:tint="@color/text_secondary"/>
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:layout_marginStart="12dp"
+                    android:text="@string/about" android:textSize="15sp"
+                    android:textColor="@color/text_primary"/>
+                <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                    android:src="@drawable/ic_chevron_right" android:tint="@color/text_hint"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

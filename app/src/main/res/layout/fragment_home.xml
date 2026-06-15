@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_primary">
+
+    <!-- Starfield background -->
+    <View android:layout_width="match_parent" android:layout_height="match_parent"
+        android:background="@drawable/bg_space_gradient"/>
+
+    <!-- Top Bar -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:padding="20dp" android:id="@+id/topBar">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="@string/my_accounts"
+            android:textSize="22sp" android:fontFamily="@font/inter_bold"
+            android:textColor="@color/text_primary"/>
+        <ImageView android:id="@+id/btnSettings"
+            android:layout_width="40dp" android:layout_height="40dp"
+            android:src="@drawable/ic_settings" android:tint="@color/text_secondary"
+            android:background="@drawable/bg_icon_btn" android:padding="8dp"
+            android:contentDescription="@string/settings"/>
+    </LinearLayout>
+
+    <!-- Empty State -->
+    <LinearLayout android:id="@+id/emptyState"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="vertical" android:gravity="center"
+        android:padding="40dp" android:visibility="gone">
+        <com.airbnb.lottie.LottieAnimationView
+            android:layout_width="200dp" android:layout_height="200dp"
+            app:lottie_rawRes="@raw/anim_empty" app:lottie_autoPlay="true"
+            app:lottie_loop="true"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/no_accounts_title" android:textSize="20sp"
+            android:fontFamily="@font/inter_semibold" android:textColor="@color/text_primary"
+            android:layout_marginTop="16dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/no_accounts_desc" android:textSize="14sp"
+            android:textColor="@color/text_secondary" android:layout_marginTop="8dp"
+            android:gravity="center" android:lineSpacingMultiplier="1.5"/>
+    </LinearLayout>
+
+    <!-- Accounts List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAccounts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="72dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="100dp"
+        android:visibility="gone"/>
+
+    <!-- Progress -->
+    <ProgressBar android:id="@+id/progressBar"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center" android:visibility="gone"
+        android:indeterminateTint="@color/accent_cyan"/>
+
+    <!-- FAB -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabAddAccount"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:text="@string/add_account"
+        android:textColor="@color/space_deep"
+        android:fontFamily="@font/inter_semibold"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@color/space_deep"
+        app:backgroundTint="@color/accent_cyan"
+        app:elevation="8dp"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

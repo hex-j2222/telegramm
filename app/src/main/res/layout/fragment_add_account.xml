@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/bg_primary" android:fillViewport="true">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="20dp">
+
+        <!-- Header -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <ImageView android:id="@+id/btnBack" android:layout_width="40dp" android:layout_height="40dp"
+                android:src="@drawable/ic_arrow_back" android:tint="@color/text_secondary"
+                android:background="@drawable/bg_icon_btn" android:padding="8dp"
+                android:contentDescription="@string/back"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:layout_marginStart="12dp"
+                android:text="@string/add_account" android:textSize="20sp"
+                android:fontFamily="@font/inter_bold" android:textColor="@color/text_primary"/>
+        </LinearLayout>
+
+        <TextView android:id="@+id/tvStepIndicator"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textSize="12sp" android:textColor="@color/accent_cyan"
+            android:fontFamily="@font/inter_semibold" android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_step_chip"
+            android:paddingHorizontal="12dp" android:paddingVertical="4dp"/>
+
+        <ProgressBar android:id="@+id/progressBar"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:indeterminateTint="@color/accent_cyan"
+            android:visibility="gone" android:layout_marginBottom="16dp"/>
+
+        <!-- STEP 1: Phone -->
+        <LinearLayout android:id="@+id/stepPhone"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp" app:cardBackgroundColor="@color/surface_card"
+                app:strokeColor="@color/accent_cyan" app:strokeWidth="1dp"
+                app:cardElevation="0dp" android:layout_marginBottom="20dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:padding="16dp">
+                    <ImageView android:layout_width="40dp" android:layout_height="40dp"
+                        android:src="@drawable/ic_phone" android:tint="@color/accent_cyan"
+                        android:layout_marginBottom="10dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Enter Your Phone Number" android:textSize="16sp"
+                        android:fontFamily="@font/inter_bold" android:textColor="@color/text_primary"
+                        android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Telegram will send a verification code to this number"
+                        android:textSize="13sp" android:textColor="@color/text_secondary"
+                        android:lineSpacingMultiplier="1.5"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/enter_phone"
+                style="@style/Widget.TelegramVault.TextInput"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPhone"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="phone" android:textColor="@color/text_primary"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView android:id="@+id/tvLearnApiId"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/learn_how_to_get_api"
+                android:textColor="@color/accent_cyan" android:textSize="12sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <!-- STEP 2: Code -->
+        <LinearLayout android:id="@+id/stepCode"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone">
+
+            <TextView android:id="@+id/tvCodeHint"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="14sp" android:textColor="@color/text_secondary"
+                android:layout_marginBottom="16dp" android:lineSpacingMultiplier="1.5"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/enter_code"
+                style="@style/Widget.TelegramVault.TextInput"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCode"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="number" android:textSize="24sp"
+                    android:letterSpacing="0.3" android:textColor="@color/text_primary"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- STEP 3: Password (2FA) -->
+        <LinearLayout android:id="@+id/stepPassword"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone">
+
+            <TextView android:id="@+id/tvPasswordHint"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="13sp" android:textColor="@color/text_secondary"
+                android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/enter_password"
+                style="@style/Widget.TelegramVault.TextInput"
+                app:endIconMode="password_toggle"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="textPassword" android:textColor="@color/text_primary"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- STEP 4: Register (new account) -->
+        <LinearLayout android:id="@+id/stepRegister"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/first_name"
+                style="@style/Widget.TelegramVault.TextInput"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etFirstName"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="textPersonName" android:textColor="@color/text_primary"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/last_name"
+                style="@style/Widget.TelegramVault.TextInput"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLastName"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:inputType="textPersonName" android:textColor="@color/text_primary"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent" android:layout_height="52dp"
+            android:text="@string/send_code"
+            style="@style/Widget.TelegramVault.Button"
+            android:layout_marginTop="8dp"/>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

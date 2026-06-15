@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash -->
+    <style name="Theme.TelegramVault.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/space_deep</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_vault_logo</item>
+        <item name="windowSplashScreenAnimationDuration">600</item>
+        <item name="postSplashScreenTheme">@style/Theme.TelegramVault</item>
+    </style>
+
+    <!-- Main Dark Space Theme -->
+    <style name="Theme.TelegramVault" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/accent_cyan</item>
+        <item name="colorPrimaryVariant">@color/accent_cyan_dark</item>
+        <item name="colorOnPrimary">@color/space_deep</item>
+        <item name="colorSecondary">@color/accent_purple</item>
+        <item name="colorSecondaryVariant">@color/accent_purple_dark</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/surface_card</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorBackground">@color/bg_primary</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorError">@color/error_red</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="android:statusBarColor">@color/space_deep</item>
+        <item name="android:navigationBarColor">@color/space_deep</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="materialButtonStyle">@style/Widget.TelegramVault.Button</item>
+        <item name="materialCardViewStyle">@style/Widget.TelegramVault.Card</item>
+        <item name="textInputStyle">@style/Widget.TelegramVault.TextInput</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.TelegramVault.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.TelegramVault.Large</item>
+    </style>
+
+    <!-- Button Style -->
+    <style name="Widget.TelegramVault.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="backgroundTint">@color/accent_cyan</item>
+        <item name="android:textColor">@color/space_deep</item>
+    </style>
+
+    <style name="Widget.TelegramVault.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">15sp</item>
+        <item name="strokeColor">@color/accent_cyan</item>
+        <item name="android:textColor">@color/accent_cyan</item>
+    </style>
+
+    <!-- Card Style -->
+    <style name="Widget.TelegramVault.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/surface_card</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/stroke_subtle</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <!-- TextInput -->
+    <style name="Widget.TelegramVault.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeColor">@color/text_input_stroke</item>
+        <item name="boxBackgroundColor">@color/surface_input</item>
+        <item name="hintTextColor">@color/text_hint</item>
+    </style>
+
+    <!-- Shapes -->
+    <style name="ShapeAppearance.TelegramVault.Medium" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearance.TelegramVault.Large" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+
+    <!-- Pin dot -->
+    <style name="PinDot">
+        <item name="android:layout_width">14dp</item>
+        <item name="android:layout_height">14dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:background">@drawable/pin_dot_selector</item>
+    </style>
+</resources>
+    <style name="KeypadButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="backgroundTint">@color/surface_card</item>
+        <item name="cornerRadius">36dp</item>
+        <item name="rippleColor">@color/accent_cyan</item>
+    </style>

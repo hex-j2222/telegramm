@@ -1,0 +1,293 @@
+name: TelegramVault CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'debug'
+        type: choice
+        options: [ debug, release ]
+
+env:
+  TDLIB_VERSION: "1.8.38"
+  JAVA_VERSION:  "17"
+  GRADLE_VERSION: "8.7"
+
+jobs:
+  # ══════════════════════════════════════════════
+  # JOB 1 — Build & cache TDLib automatically
+  # ══════════════════════════════════════════════
+  tdlib:
+    name: "📦 TDLib (${{ env.TDLIB_VERSION }})"
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache.outputs.cache-hit }}
+
+    steps:
+      - name: Check TDLib cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: tdlib-out
+          key: tdlib-v${{ env.TDLIB_VERSION }}-android-r3
+
+      - name: Install system deps
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y cmake ninja-build gperf \
+            libssl-dev zlib1g-dev openjdk-17-jdk
+
+      - name: Setup Android SDK
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK 26
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          yes | sdkmanager "ndk;26.3.11579264" \
+            --sdk_root=$ANDROID_HOME 2>/dev/null || true
+
+      - name: Clone TDLib
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth=1 \
+            --branch v${{ env.TDLIB_VERSION }} \
+            https://github.com/tdlib/td.git tdlib
+
+      - name: Build all ABIs
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          NDK="$ANDROID_HOME/ndk/26.3.11579264"
+          mkdir -p tdlib-out/jniLibs
+
+          for ABI in arm64-v8a armeabi-v7a x86_64 x86; do
+            echo "▶ $ABI …"
+            mkdir -p "tdlib-out/jniLibs/$ABI"
+            cmake -S tdlib -B "b-$ABI" -G Ninja \
+              -DCMAKE_BUILD_TYPE=MinSizeRel \
+              -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
+              -DANDROID_ABI="$ABI" \
+              -DANDROID_NATIVE_API_LEVEL=21 \
+              -DANDROID_STL=c++_shared \
+              -DTD_ENABLE_JNI=ON \
+              -DCMAKE_INSTALL_PREFIX="inst-$ABI"
+            cmake --build "b-$ABI" --target install -j$(nproc)
+            SO=$(find "inst-$ABI" -name "libtdjni.so" | head -1)
+            [ -n "$SO" ] && cp "$SO" "tdlib-out/jniLibs/$ABI/"
+            echo "  ✅ $(ls -sh tdlib-out/jniLibs/$ABI/libtdjni.so 2>/dev/null)"
+          done
+
+      - name: Build tdlib.jar
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p tdlib-out/jar
+          cmake -S tdlib -B b-jar -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DTD_ENABLE_JNI=ON
+          cmake --build b-jar -j$(nproc) || true
+          JAR=$(find b-jar -name "*.jar" | grep -i td | head -1)
+          [ -n "$JAR" ] && cp "$JAR" tdlib-out/jar/tdlib.jar \
+            && echo "✅ jar: $(ls -sh tdlib-out/jar/tdlib.jar)" \
+            || echo "⚠️  jar not found — stub will be used"
+
+      - name: Save TDLib cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: tdlib-out
+          key: tdlib-v${{ env.TDLIB_VERSION }}-android-r3
+
+      - name: Upload TDLib artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tdlib-${{ env.TDLIB_VERSION }}
+          path: tdlib-out/
+          retention-days: 30
+
+  # ══════════════════════════════════════════════
+  # JOB 2 — Build Android app
+  # ══════════════════════════════════════════════
+  build:
+    name: "🔨 Build APK (${{ github.event.inputs.build_type || 'debug' }})"
+    runs-on: ubuntu-latest
+    needs: tdlib
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
+
+      # ── Restore TDLib ──────────────────────────
+      - name: Restore TDLib cache
+        id: tdlib-cache
+        uses: actions/cache@v4
+        with:
+          path: tdlib-out
+          key: tdlib-v${{ env.TDLIB_VERSION }}-android-r3
+
+      - name: Download TDLib artifact (fallback)
+        if: steps.tdlib-cache.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: tdlib-${{ env.TDLIB_VERSION }}
+          path: tdlib-out
+
+      - name: Install TDLib into project
+        run: |
+          echo "📦 Installing TDLib…"
+          if [ -d tdlib-out/jniLibs ]; then
+            mkdir -p app/src/main/jniLibs
+            cp -rv tdlib-out/jniLibs/* app/src/main/jniLibs/
+            echo "✅ .so files:"
+            find app/src/main/jniLibs -name "*.so" | xargs ls -sh
+          fi
+          if [ -f tdlib-out/jar/tdlib.jar ]; then
+            mkdir -p app/libs
+            cp tdlib-out/jar/tdlib.jar app/libs/tdlib.jar
+            echo "✅ tdlib.jar: $(ls -sh app/libs/tdlib.jar)"
+            # Remove stubs — real library is present
+            rm -f app/src/main/java/org/drinkless/tdlib/Client.kt
+            rm -f app/src/main/java/org/drinkless/tdlib/TdApi.kt
+          else
+            echo "⚠️  No jar — keeping stub classes (no-op TDLib)"
+          fi
+
+      # ── Credentials from GitHub Secrets ───────
+      - name: Write local.properties
+        run: |
+          {
+            echo "sdk.dir=$ANDROID_HOME"
+            echo "tg.api.id=${{ secrets.TG_API_ID }}"
+            echo "tg.api.hash=${{ secrets.TG_API_HASH }}"
+          } > local.properties
+
+      # ── Lint ──────────────────────────────────
+      - name: Lint
+        run: ./gradlew lint --no-daemon --continue
+        continue-on-error: true
+
+      - name: Upload lint report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-*.html
+
+      # ── Unit tests ────────────────────────────
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest --no-daemon --continue
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: app/build/test-results/
+
+      # ── Build ─────────────────────────────────
+      - name: Build Debug APK
+        if: github.event.inputs.build_type != 'release'
+        run: |
+          ./gradlew assembleDebug --no-daemon --stacktrace \
+            -Pandroid.debug.obsoleteApi=true
+
+      - name: Build Release APK
+        if: github.event.inputs.build_type == 'release'
+        run: |
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      # ── Upload APK ────────────────────────────
+      - name: Upload Debug APK
+        if: github.event.inputs.build_type != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: TelegramVault-debug-${{ github.run_number }}
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+
+      - name: Upload Release APK
+        if: github.event.inputs.build_type == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: TelegramVault-release-${{ github.run_number }}
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 60
+
+      # ── Summary ───────────────────────────────
+      - name: Job summary
+        if: always()
+        run: |
+          APK=$(find app/build/outputs/apk -name "*.apk" 2>/dev/null | head -1)
+          SIZE=$([ -f "$APK" ] && ls -sh "$APK" | awk '{print $1}' || echo "N/A")
+          {
+            echo "## 🚀 Build #${{ github.run_number }}"
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Commit | \`${GITHUB_SHA:0:8}\` |"
+            echo "| Branch | \`${{ github.ref_name }}\` |"
+            echo "| Type | \`${{ github.event.inputs.build_type || 'debug' }}\` |"
+            echo "| TDLib | \`v${{ env.TDLIB_VERSION }}\` |"
+            echo "| APK size | \`$SIZE\` |"
+          } >> $GITHUB_STEP_SUMMARY
+
+  # ══════════════════════════════════════════════
+  # JOB 3 — GitHub Release (on version tags)
+  # ══════════════════════════════════════════════
+  release:
+    name: "🎉 Release"
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Release APK
+        uses: actions/download-artifact@v4
+        with:
+          pattern: TelegramVault-release-*
+          merge-multiple: true
+          path: apks/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Telegram Vault ${{ github.ref_name }}"
+          body: |
+            ## Telegram Vault ${{ github.ref_name }}
+
+            ### التثبيت
+            1. حمّل `TelegramVault-release.apk`
+            2. فعّل "مصادر غير معروفة" في الإعدادات
+            3. ثبّت واستمتع 🚀
+
+            ### المتطلبات
+            - Android 5.0+ (API 21)
+            - مساحة حرة 50 MB
+          files: apks/*.apk
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-beta') }}

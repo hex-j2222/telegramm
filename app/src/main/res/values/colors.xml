@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Space Dark Palette -->
+    <color name="space_deep">#080C14</color>
+    <color name="space_dark">#0D1220</color>
+    <color name="space_mid">#111827</color>
+    <color name="space_card">#151E2E</color>
+
+    <!-- Accents -->
+    <color name="accent_cyan">#00D4FF</color>
+    <color name="accent_cyan_dark">#00A8CC</color>
+    <color name="accent_purple">#7C3AED</color>
+    <color name="accent_purple_dark">#5B21B6</color>
+    <color name="accent_blue">#3B82F6</color>
+    <color name="accent_green">#10B981</color>
+
+    <!-- Backgrounds -->
+    <color name="bg_primary">#080C14</color>
+    <color name="bg_secondary">#0D1220</color>
+    <color name="surface_card">#151E2E</color>
+    <color name="surface_input">#1A2540</color>
+
+    <!-- Text -->
+    <color name="text_primary">#F0F6FF</color>
+    <color name="text_secondary">#8899BB</color>
+    <color name="text_hint">#4A5568</color>
+
+    <!-- Stroke / Divider -->
+    <color name="stroke_subtle">#1F2D45</color>
+    <color name="stroke_active">#00D4FF40</color>
+
+    <!-- Status -->
+    <color name="error_red">#EF4444</color>
+    <color name="success_green">#10B981</color>
+    <color name="warning_amber">#F59E0B</color>
+
+    <!-- Pin dots -->
+    <color name="pin_dot_empty">#1F2D45</color>
+    <color name="pin_dot_filled">#00D4FF</color>
+
+    <!-- Misc -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="text_input_stroke">#2A3A55</color>
+    <color name="overlay_scrim">#80080C14</color>
+    <color name="star_color">#FFD700</color>
+</resources>

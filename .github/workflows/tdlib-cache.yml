@@ -1,0 +1,95 @@
+name: TDLib Pre-build Cache
+
+on:
+  schedule:
+    # Rebuild TDLib cache every Sunday at 02:00 UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      tdlib_version:
+        description: 'TDLib version tag (e.g. 1.8.38)'
+        required: true
+        default: '1.8.38'
+
+env:
+  TDLIB_VERSION: ${{ github.event.inputs.tdlib_version || '1.8.38' }}
+
+jobs:
+  build-tdlib:
+    name: "Build & Cache TDLib ${{ github.event.inputs.tdlib_version || '1.8.38' }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Check existing cache
+        id: check-cache
+        uses: actions/cache@v4
+        with:
+          path: tdlib-artifacts
+          key: tdlib-${{ env.TDLIB_VERSION }}-android-all-abis
+          lookup-only: true
+
+      - name: Install system dependencies
+        if: steps.check-cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            cmake ninja-build gperf \
+            libssl-dev zlib1g-dev \
+            openjdk-17-jdk php-cli
+
+      - name: Setup Android SDK + NDK
+        if: steps.check-cache.outputs.cache-hit != 'true'
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK 26
+        if: steps.check-cache.outputs.cache-hit != 'true'
+        run: |
+          yes | sdkmanager "ndk;26.3.11579264" --sdk_root=$ANDROID_HOME 2>/dev/null || true
+
+      - name: Clone TDLib
+        if: steps.check-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth=1 \
+            --branch v${{ env.TDLIB_VERSION }} \
+            https://github.com/tdlib/td.git tdlib-src
+
+      - name: Build all ABIs
+        if: steps.check-cache.outputs.cache-hit != 'true'
+        run: |
+          NDK="$ANDROID_HOME/ndk/26.3.11579264"
+          mkdir -p tdlib-artifacts/jniLibs tdlib-artifacts/jar
+
+          for ABI in arm64-v8a armeabi-v7a x86_64 x86; do
+            echo "▶ Building $ABI..."
+            cmake -S tdlib-src -B build-$ABI -G Ninja \
+              -DCMAKE_BUILD_TYPE=MinSizeRel \
+              -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
+              -DANDROID_ABI="$ABI" \
+              -DANDROID_NATIVE_API_LEVEL=21 \
+              -DANDROID_STL=c++_shared \
+              -DTD_ENABLE_JNI=ON \
+              -DCMAKE_INSTALL_PREFIX=install-$ABI
+            cmake --build build-$ABI --target install -j$(nproc)
+            cp install-$ABI/lib/libtdjni.so tdlib-artifacts/jniLibs/$ABI/ 2>/dev/null || \
+              find build-$ABI -name "libtdjni.so" -exec cp {} tdlib-artifacts/jniLibs/$ABI/ \;
+            echo "  ✅ $ABI → $(find tdlib-artifacts/jniLibs/$ABI -name '*.so' -exec du -h {} \;)"
+          done
+
+          # Build jar
+          cmake -S tdlib-src -B build-jar -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DTD_ENABLE_JNI=ON \
+            -DJAVA_HOME="$JAVA_HOME"
+          cmake --build build-jar -j$(nproc) || true
+          find . -name "*.jar" 2>/dev/null | grep -i td | head -1 | \
+            xargs -I{} cp {} tdlib-artifacts/jar/tdlib.jar || echo "jar not found"
+
+          ls -lhR tdlib-artifacts/
+
+      - name: Save TDLib cache
+        if: steps.check-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: tdlib-artifacts
+          key: tdlib-${{ env.TDLIB_VERSION }}-android-all-abis
