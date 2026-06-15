@@ -15,15 +15,13 @@ on:
         options: [ debug, release ]
 
 env:
-  # ✅ TDLib لا يدعم tags — نستخدم master دائماً
-  # NDK r29 هو أحدث إصدار مستقر (أكتوبر 2025)
-  NDK_VERSION:   "29.0.14206865"
-  JAVA_VERSION:  "17"
+  NDK_VERSION:    "29.0.14206865"   # NDK r29 — latest stable (Oct 2025)
+  JAVA_VERSION:   "17"
   GRADLE_VERSION: "8.14"
 
 jobs:
   # ══════════════════════════════════════════════
-  # JOB 1 — Build & cache TDLib automatically
+  # JOB 1 — Build & cache TDLib
   # ══════════════════════════════════════════════
   tdlib:
     name: "📦 TDLib (latest master)"
@@ -33,11 +31,12 @@ jobs:
       tdlib-sha: ${{ steps.get-sha.outputs.sha }}
 
     steps:
-      # نحصل على آخر SHA من master لاستخدامه كمفتاح cache
+      # ── الحصول على آخر SHA كمفتاح للـ cache ─
       - name: Get TDLib latest SHA
         id: get-sha
         run: |
-          SHA=$(git ls-remote https://github.com/tdlib/td.git HEAD | cut -f1 | cut -c1-12)
+          SHA=$(git ls-remote https://github.com/tdlib/td.git HEAD \
+                | cut -f1 | cut -c1-12)
           echo "sha=$SHA" >> $GITHUB_OUTPUT
           echo "TDLib HEAD: $SHA"
 
@@ -46,15 +45,19 @@ jobs:
         uses: actions/cache@v4
         with:
           path: tdlib-out
-          # ✅ المفتاح مرتبط بـ SHA الفعلي بدل رقم إصدار وهمي
-          key: tdlib-sha-${{ steps.get-sha.outputs.sha }}-ndk${{ env.NDK_VERSION }}-r1
+          # ✅ المفتاح مرتبط بالـ SHA الفعلي — يُعاد البناء تلقائياً عند تحديث TDLib
+          key: tdlib-sha-${{ steps.get-sha.outputs.sha }}-ndk${{ env.NDK_VERSION }}-r2
 
+      # ── تثبيت المتطلبات ───────────────────────
       - name: Install system deps
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y cmake ninja-build gperf \
-            libssl-dev zlib1g-dev openjdk-17-jdk
+          sudo apt-get install -y \
+            cmake ninja-build gperf \
+            libssl-dev zlib1g-dev \
+            openjdk-17-jdk \
+            php-cli perl          # ✅ مطلوبان لتوليد كود TDLib تلقائياً
 
       - name: Setup Android SDK
         if: steps.cache.outputs.cache-hit != 'true'
@@ -63,60 +66,71 @@ jobs:
       - name: Install NDK r29
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          # ✅ NDK r29 هو الأحدث المستقر (29.0.14206865)
           yes | sdkmanager "ndk;${{ env.NDK_VERSION }}" \
             --sdk_root=$ANDROID_HOME 2>/dev/null || true
+          # ✅ TDLib يحتاج CMake 3.22.1 داخل SDK
+          yes | sdkmanager "cmake;3.22.1" \
+            --sdk_root=$ANDROID_HOME 2>/dev/null || true
 
+      # ── clone TDLib ───────────────────────────
       - name: Clone TDLib
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          # ✅ الإصلاح الرئيسي: TDLib لا يستخدم version tags
-          # يوصي الفريق باستخدام master مباشرة
+          # ✅ الإصلاح الأساسي: TDLib لا يستخدم version tags على GitHub
+          # الفريق يوصي باستخدام master مباشرة
           git clone --depth=1 https://github.com/tdlib/td.git tdlib
-          echo "Cloned TDLib at: $(git -C tdlib rev-parse HEAD)"
+          echo "Cloned TDLib @ $(git -C tdlib rev-parse HEAD)"
 
-      - name: Build all ABIs
+      # ── بناء OpenSSL أولاً (مطلوب لـ TDLib) ──
+      - name: Build OpenSSL for Android
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          NDK="$ANDROID_HOME/ndk/${{ env.NDK_VERSION }}"
-          mkdir -p tdlib-out/jniLibs
+          # ✅ استخدام السكريبت الرسمي بدل cmake مباشرة
+          # المعاملات: [sdk_path] [ndk_version] [openssl_version]
+          cd tdlib/example/android
+          ./build-openssl.sh "$ANDROID_HOME" "${{ env.NDK_VERSION }}"
 
+      # ── بناء TDLib بالسكريبت الرسمي ───────────
+      - name: Build TDLib for Android
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          # ✅ السكريبت الرسمي يولّد الكود التلقائي (mime_type_to_extension.cpp ...)
+          # ويبني جميع ABIs بشكل صحيح
+          # المعاملات: [sdk_path] [ndk_version] [openssl_path]
+          cd tdlib/example/android
+          OPENSSL_PATH="$(pwd)/openssl"
+          ./build-tdlib.sh "$ANDROID_HOME" "${{ env.NDK_VERSION }}" "$OPENSSL_PATH"
+
+      # ── جمع المخرجات ─────────────────────────
+      - name: Collect TDLib outputs
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p tdlib-out/jniLibs tdlib-out/jar
+
+          # .so files لجميع ABIs
           for ABI in arm64-v8a armeabi-v7a x86_64 x86; do
-            echo "▶ $ABI …"
-            mkdir -p "tdlib-out/jniLibs/$ABI"
-            cmake -S tdlib -B "b-$ABI" -G Ninja \
-              -DCMAKE_BUILD_TYPE=MinSizeRel \
-              -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
-              -DANDROID_ABI="$ABI" \
-              -DANDROID_NATIVE_API_LEVEL=21 \
-              -DANDROID_STL=c++_shared \
-              -DTD_ENABLE_JNI=ON \
-              -DCMAKE_INSTALL_PREFIX="inst-$ABI"
-            cmake --build "b-$ABI" --target install -j$(nproc)
-            SO=$(find "inst-$ABI" -name "libtdjni.so" | head -1)
-            [ -n "$SO" ] && cp "$SO" "tdlib-out/jniLibs/$ABI/"
-            echo "  ✅ $(ls -sh tdlib-out/jniLibs/$ABI/libtdjni.so 2>/dev/null)"
+            SRC="tdlib/example/android/tdlib/libs/$ABI"
+            if [ -d "$SRC" ]; then
+              mkdir -p "tdlib-out/jniLibs/$ABI"
+              cp -v "$SRC"/*.so "tdlib-out/jniLibs/$ABI/" 2>/dev/null || true
+            fi
           done
 
-      - name: Build tdlib.jar
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p tdlib-out/jar
-          cmake -S tdlib -B b-jar -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DTD_ENABLE_JNI=ON
-          cmake --build b-jar -j$(nproc) || true
-          JAR=$(find b-jar -name "*.jar" | grep -i td | head -1)
-          [ -n "$JAR" ] && cp "$JAR" tdlib-out/jar/tdlib.jar \
+          # tdlib.jar
+          JAR=$(find tdlib/example/android/tdlib -name "*.jar" | head -1)
+          [ -n "$JAR" ] && cp -v "$JAR" tdlib-out/jar/tdlib.jar \
             && echo "✅ jar: $(ls -sh tdlib-out/jar/tdlib.jar)" \
-            || echo "⚠️  jar not found — stub will be used"
+            || echo "⚠️  jar not found"
+
+          echo "--- Output structure ---"
+          find tdlib-out -type f | sort
 
       - name: Save TDLib cache
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: tdlib-out
-          key: tdlib-sha-${{ steps.get-sha.outputs.sha }}-ndk${{ env.NDK_VERSION }}-r1
+          key: tdlib-sha-${{ steps.get-sha.outputs.sha }}-ndk${{ env.NDK_VERSION }}-r2
 
       - name: Upload TDLib artifact
         uses: actions/upload-artifact@v4
@@ -138,7 +152,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v5         # ✅ ترقية من v4 إلى v5
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: temurin
@@ -148,17 +162,17 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4  # ✅ ترقية من v3 إلى v4
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
 
-      # ── Restore TDLib ──────────────────────────
+      # ── استعادة TDLib ─────────────────────────
       - name: Restore TDLib cache
         id: tdlib-cache
         uses: actions/cache@v4
         with:
           path: tdlib-out
-          key: tdlib-sha-${{ needs.tdlib.outputs.tdlib-sha }}-ndk${{ env.NDK_VERSION }}-r1
+          key: tdlib-sha-${{ needs.tdlib.outputs.tdlib-sha }}-ndk${{ env.NDK_VERSION }}-r2
 
       - name: Download TDLib artifact (fallback)
         if: steps.tdlib-cache.outputs.cache-hit != 'true'
@@ -180,14 +194,13 @@ jobs:
             mkdir -p app/libs
             cp tdlib-out/jar/tdlib.jar app/libs/tdlib.jar
             echo "✅ tdlib.jar: $(ls -sh app/libs/tdlib.jar)"
-            # Remove stubs — real library is present
             rm -f app/src/main/java/org/drinkless/tdlib/Client.kt
             rm -f app/src/main/java/org/drinkless/tdlib/TdApi.kt
           else
             echo "⚠️  No jar — keeping stub classes (no-op TDLib)"
           fi
 
-      # ── Credentials from GitHub Secrets ───────
+      # ── Credentials ───────────────────────────
       - name: Write local.properties
         run: |
           {
