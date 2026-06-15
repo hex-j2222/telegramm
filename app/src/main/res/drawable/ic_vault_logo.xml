@@ -1,21 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="96dp" android:height="96dp" android:viewportWidth="96" android:viewportHeight="96">
+    android:width="96dp" android:height="96dp"
+    android:viewportWidth="96" android:viewportHeight="96">
+
     <!-- Outer shield -->
-    <path android:fillColor="#00D4FF"
+    <path
+        android:fillColor="#00D4FF"
         android:pathData="M48,4 L16,18 L16,46 C16,64 30,80 48,88 C66,80 80,64 80,46 L80,18 Z"/>
+
     <!-- Inner shield lighter -->
-    <path android:fillColor="#0D1220"
+    <path
+        android:fillColor="#0D1220"
         android:pathData="M48,14 L24,25 L24,46 C24,60 34,73 48,80 C62,73 72,60 72,46 L72,25 Z"/>
-    <!-- Lock body -->
-    <rect android:fillColor="#00D4FF"
-        android:left="34" android:top="46" android:right="62" android:bottom="68"
-        android:rx="4"/>
+
+    <!-- Lock body: rect(left=34,top=46,right=62,bottom=68,rx=4) converted to path -->
+    <path
+        android:fillColor="#00D4FF"
+        android:pathData="M38,46 L58,46 Q62,46 62,50 L62,64 Q62,68 58,68 L38,68 Q34,68 34,64 L34,50 Q34,46 38,46 Z"/>
+
     <!-- Lock shackle -->
-    <path android:fillColor="#00D4FF" android:strokeColor="#00D4FF" android:strokeWidth="4"
+    <path
+        android:fillColor="#00D4FF"
+        android:strokeColor="#00D4FF"
+        android:strokeWidth="4"
         android:fillAlpha="0"
         android:pathData="M38,46 L38,38 C38,30 58,30 58,38 L58,46"/>
-    <!-- Keyhole -->
-    <circle android:fillColor="#0D1220" android:cx="48" android:cy="55" android:radius="5"/>
-    <rect android:fillColor="#0D1220" android:left="46" android:top="55" android:right="50" android:bottom="63"/>
+
+    <!-- Keyhole circle: cx=48,cy=55,r=5 converted to path -->
+    <path
+        android:fillColor="#0D1220"
+        android:pathData="M48,50 A5,5 0 1,0 48.001,50 Z"/>
+
+    <!-- Keyhole stem: rect(left=46,top=55,right=50,bottom=63) converted to path -->
+    <path
+        android:fillColor="#0D1220"
+        android:pathData="M46,55 L50,55 L50,63 L46,63 Z"/>
 </vector>
