@@ -93,7 +93,8 @@
         <item name="android:layout_margin">8dp</item>
         <item name="android:background">@drawable/pin_dot_selector</item>
     </style>
-</resources>
+
+    <!-- Keypad button (PIN entry) -->
     <style name="KeypadButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:layout_width">72dp</item>
         <item name="android:layout_height">72dp</item>
@@ -105,3 +106,4 @@
         <item name="cornerRadius">36dp</item>
         <item name="rippleColor">@color/accent_cyan</item>
     </style>
+</resources>
