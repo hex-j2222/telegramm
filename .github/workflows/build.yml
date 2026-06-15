@@ -17,7 +17,7 @@ on:
 env:
   NDK_VERSION:    "29.0.14206865"   # NDK r29 — latest stable
   JAVA_VERSION:   "17"
-  GRADLE_VERSION: "8.14"
+  GRADLE_VERSION: "8.7"
 
 jobs:
   # ══════════════════════════════════════════════
@@ -178,13 +178,16 @@ jobs:
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
 
-      # ── توليد gradlew (غير موجود في الـ repo) ─
+      # ── توليد gradlew (غير موجود في الـ repo) ──
       - name: Generate gradlew
         run: |
-          # gradlew غير مُضاف للـ repo — نولّده من Gradle المثبَّت
-          gradle wrapper --gradle-version ${{ env.GRADLE_VERSION }}
+          # gradle wrapper يُنشئ gradlew ويحافظ على gradle-wrapper.properties
+          # نمرر --gradle-version لضمان نفس الإصدار المحدد في wrapper.properties
+          gradle wrapper --gradle-version "${{ env.GRADLE_VERSION }}" --no-daemon
           chmod +x gradlew
-          echo "✅ gradlew generated: $(ls -sh gradlew)"
+          echo "✅ gradlew ready"
+          # تأكيد أن wrapper.properties يشير للإصدار الصحيح
+          grep distributionUrl gradle/wrapper/gradle-wrapper.properties
 
       # ── استعادة TDLib ─────────────────────────
       - name: Restore TDLib cache
@@ -257,13 +260,15 @@ jobs:
       - name: Build Debug APK
         if: github.event.inputs.build_type != 'release'
         run: |
-          ./gradlew assembleDebug --no-daemon --stacktrace \
-            -Pandroid.debug.obsoleteApi=true
+          ./gradlew assembleDebug --no-daemon --stacktrace --warning-mode all \
+            -Pandroid.debug.obsoleteApi=true \
+            -Dkotlin.daemon.jvm.options="-Xmx2g"
 
       - name: Build Release APK
         if: github.event.inputs.build_type == 'release'
         run: |
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          ./gradlew assembleRelease --no-daemon --stacktrace --warning-mode all \
+            -Dkotlin.daemon.jvm.options="-Xmx2g" 
 
       # ── Upload APK ────────────────────────────
       - name: Upload Debug APK
