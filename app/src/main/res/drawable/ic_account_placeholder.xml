@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="56dp" android:height="56dp" android:viewportWidth="56" android:viewportHeight="56">
-    <circle android:fillColor="#1A2540" android:cx="28" android:cy="28" android:radius="28"/>
-    <path android:fillColor="#4A5568" android:pathData="M28,28m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
-    <path android:fillColor="#4A5568" android:pathData="M10,46c0,-8 8,-14 18,-14s18,6 18,14"/>
+    android:width="56dp" android:height="56dp"
+    android:viewportWidth="56" android:viewportHeight="56">
+
+    <!-- Background circle (cx=28, cy=28, r=28) converted from <circle> to <path> -->
+    <path
+        android:fillColor="#1A2540"
+        android:pathData="M28,0 A28,28 0 1,0 28.001,0 Z"/>
+
+    <!-- Head circle (cx=28, cy=20, r=10) -->
+    <path
+        android:fillColor="#4A5568"
+        android:pathData="M28,10 A10,10 0 1,0 28.001,10 Z"/>
+
+    <!-- Body arc -->
+    <path
+        android:fillColor="#4A5568"
+        android:pathData="M10,46 C10,38 18,32 28,32 S46,38 46,46"/>
 </vector>
