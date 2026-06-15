@@ -26,10 +26,13 @@ object TdApi {
     class SetTdlibParameters(val parameters: TdlibParameters) : Function<Ok>()
     class GetMe : Function<User>()
     class LogOut : Function<Ok>()
+    // FIX: offset and limit must be Long to match TDLib API and usage in TdLibClient
     class DownloadFile(val fileId: Int, val priority: Int, val offset: Long, val limit: Long, val synchronous: Boolean) : Function<File>()
     class SetName(val firstName: String, val lastName: String) : Function<Ok>()
     class SetBio(val bio: String) : Function<Ok>()
     class GetUser(val userId: Long) : Function<User>()
+    // FIX: Added missing RegisterUser class used in TdLibClient.submitRegistration()
+    class RegisterUser(val firstName: String, val lastName: String) : Function<Ok>()
 
     // Updates
     class UpdateAuthorizationState(val authorizationState: Object) : Object()
