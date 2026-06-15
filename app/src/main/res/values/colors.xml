@@ -39,7 +39,7 @@
     <color name="pin_dot_filled">#00D4FF</color>
 
     <!-- Misc -->
-    <<color name="white">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
     <color name="overlay_scrim">#80080C14</color>
