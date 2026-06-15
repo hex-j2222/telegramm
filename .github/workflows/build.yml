@@ -178,6 +178,14 @@ jobs:
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
 
+      # ── توليد gradlew (غير موجود في الـ repo) ─
+      - name: Generate gradlew
+        run: |
+          # gradlew غير مُضاف للـ repo — نولّده من Gradle المثبَّت
+          gradle wrapper --gradle-version ${{ env.GRADLE_VERSION }}
+          chmod +x gradlew
+          echo "✅ gradlew generated: $(ls -sh gradlew)"
+
       # ── استعادة TDLib ─────────────────────────
       - name: Restore TDLib cache
         id: tdlib-cache
