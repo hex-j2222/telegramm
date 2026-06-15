@@ -31,7 +31,8 @@ class ProfileViewModel @Inject constructor(
         if (account.apiId > 0) {
             viewModelScope.launch {
                 val sessionDir = "session_${account.phoneNumber.replace("+","").replace(" ","")}"
-                tdLib.initialize(account.apiId, account.apiHash, account.phoneNumber, sessionDir)
+                // FIX: initialize() only takes (phone, sessionDir) — apiId/apiHash come from BuildConfig
+                tdLib.initialize(account.phoneNumber, sessionDir)
             }
         }
     }
@@ -40,7 +41,8 @@ class ProfileViewModel @Inject constructor(
         val account = currentAccount ?: return
         viewModelScope.launch {
             _uiState.value = ProfileUiState.Loading
-            tdLib.updateUserProfile(firstName, lastName, bio) { success ->
+            // FIX: method is updateProfile(), not updateUserProfile()
+            tdLib.updateProfile(firstName, lastName, bio) { success ->
                 viewModelScope.launch {
                     if (success) {
                         val updated = account.copy(firstName = firstName, lastName = lastName, bio = bio)
