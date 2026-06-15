@@ -187,7 +187,7 @@ class TdLibClient @Inject constructor(
 
     private fun downloadProfilePhoto(user: TdApi.User) {
         val photoId = user.profilePhoto?.small?.id ?: return
-        client?.send(TdApi.DownloadFile(photoId, 1, 0, 0, true)) { res ->
+        client?.send(TdApi.DownloadFile(photoId, 1, 0L, 0L, true)) { res ->
             if (res is TdApi.File && res.local.isDownloadingCompleted) {
                 Log.d(TAG, "Profile photo saved: ${res.local.path}")
             }
